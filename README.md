@@ -83,10 +83,9 @@ Open a terminal and run the following command:
 
 ```
 pip install openai
-pip install tiktoken
 ```
 
-3. Add your **OpenAI API key** and configure language models and colors in the `config.ini` file.
+3. Add your **OpenAI API key** and configure language models and colors in the `config.py` file.
 
 ## Usage
 
@@ -130,18 +129,18 @@ python3 main.py -m
 **Perform a dry run to estimate tokens and API calls:**
 
 ```
-python3 main.py -i input.txt -n
+python3 main.py -i input.txt -o output.txt -n
 ```
 
-**Process a directory of input files:**
+**Interactive mode:**
 
 ```
-python3 main.py -i input_directory -o output_directory
+python3 main.py -i input.txt -o output.txt -m
 ```
 
 ## Customization
 
-You can add more language models and change the colors for print messages by updating the `config.ini` file. Refer to the **[OpenAI documentation](https://platform.openai.com/docs/models)** for a list of available models and their capabilities.
+You can add more language models and change the colors for print messages by updating the `config.py` file. Refer to the **[OpenAI documentation](https://platform.openai.com/docs/models)** for a list of available models and their capabilities.
 
 ## TODOs
 

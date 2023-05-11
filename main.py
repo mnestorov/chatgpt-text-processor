@@ -1,21 +1,10 @@
 import openai
-import configparser
 import os
 import argparse
 from concurrent.futures import ThreadPoolExecutor
+from config import OPENAI_API_KEY, LANGUAGE_MODELS, COLORS
 
-def read_config(config_file):
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    
-    api_key = config.get("openai", "api_key")
-    models = {k: config.get("language_models", k) for k in config.options("language_models")}
-    colors = {k: config.get("colors", k) for k in config.options("colors")}
-
-    return api_key, models, colors
-
-api_key, LANGUAGE_MODELS, COLORS = read_config("config.ini")
-openai.api_key = api_key
+openai.api_key = OPENAI_API_KEY
 
 def colored_print(message, color="green"):
     print(f"{COLORS[color]}{message}{COLORS['reset']}")
@@ -138,7 +127,8 @@ def dry_run(input_file, max_tokens):
     total_tokens = sum(len(chunk) for chunk in chunks)
     api_calls = len(chunks)
     
-    colored_print(f"Total tokens to be processed: {total_tokens}. This will make {api_calls} API calls.", "green")
+    colored_print(f"Total tokens to be processed are {total_tokens}.", "green")
+    colored_print(f"This will make {api_calls} API calls.\n", "green")
     
     return total_tokens, api_calls
 
@@ -159,7 +149,8 @@ if __name__ == "__main__":
 
     if args.dry_run:
         total_tokens, api_calls = dry_run(args.input, args.tokens)
-        colored_print(f"Dry run: Estimated tokens: {total_tokens}, Estimated API calls: {api_calls}", "green")
+        colored_print(f"Dry run: Estimated tokens - {total_tokens}", "green")
+        colored_print(f"Dry run: Estimated API calls - {api_calls}", "green")
     elif args.interactive:
         process_text_interactive(model, args.tokens, args.temperature)
     elif os.path.isfile(args.input):
