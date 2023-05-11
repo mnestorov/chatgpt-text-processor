@@ -1,24 +1,23 @@
 import openai
 import configparser
 import os
-from concurrent.futures import ThreadPoolExecutor
-from tiktoken import Tokenizer, TokenizerException
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 
 def read_config(config_file):
     config = configparser.ConfigParser()
     config.read(config_file)
+    
+    api_key = config.get("openai", "api_key")
+    models = {k: config.get("language_models", k) for k in config.options("language_models")}
+    colors = {k: config.get("colors", k) for k in config.options("colors")}
 
-    openai_api_key = config.get("openai", "api_key")
-    language_models = {k: v for k, v in config.items("language_models")}
-    colors = {k: v for k, v in config.items("colors")}
-
-    return openai_api_key, language_models, colors
+    return api_key, models, colors
 
 api_key, LANGUAGE_MODELS, COLORS = read_config("config.ini")
 openai.api_key = api_key
 
-def colored_print(message, color):
+def colored_print(message, color="green"):
     print(f"{COLORS[color]}{message}{COLORS['reset']}")
 
 def load_text(file_path):
@@ -58,9 +57,9 @@ def call_openai_api_summary(chunk, model, temperature):
     )
     return response.choices[0]['message']['content'].strip()
 
-def split_into_chunks(text, tokens=1500):
+def split_into_chunks(text, chunk_size=1500):
     words = text.split()
-    chunks = [' '.join(words[i:i + tokens]) for i in range(0, len(words), tokens)]
+    chunks = [' '.join(words[i:i + chunk_size]) for i in range(0, len(words), chunk_size)]
     return chunks
 
 def process_chunks(input_file, output_file, model, tokens, temperature):
@@ -72,6 +71,28 @@ def process_chunks(input_file, output_file, model, tokens, temperature):
 
     save_to_file(responses, output_file)
 
+def process_text(input_file, output_file, model, temperature, summary=False, interactive=False):
+    text = load_text(input_file)
+    chunks = split_into_chunks(text)
+
+    with ThreadPoolExecutor() as executor:
+        if summary:
+            responses = list(executor.map(lambda chunk: call_openai_api_summary(chunk, model, temperature), chunks))
+        elif interactive:
+            colored_print("Interactive mode: Type your input and press Enter. Type 'exit' to quit.")
+            while True:
+                user_input = input("> ")
+                if user_input.lower() == "exit":
+                    break
+
+                chunk = user_input.strip()
+                response = call_openai_api(chunk, model, temperature)
+                colored_print(f"AI: {response}", "green")
+        else:
+            responses = list(executor.map(lambda chunk: call_openai_api(chunk, model, temperature), chunks))
+
+        save_to_file(responses, output_file)    
+
 def process_text_summary(input_file, output_file, model, tokens, temperature):
     text = load_text(input_file)
     chunks = split_into_chunks(text, tokens)
@@ -82,7 +103,7 @@ def process_text_summary(input_file, output_file, model, tokens, temperature):
     save_to_file(summaries, output_file)
 
 def process_text_interactive(model, tokens, temperature):
-    colored_print("Interactive mode: Type your input and press Enter. Type 'exit' to quit.")
+    colored_print("Interactive mode: Type your input and press Enter. Type 'exit' to quit.", "green")
     while True:
         user_input = input("> ")
         if user_input.lower() == "exit":
@@ -90,7 +111,7 @@ def process_text_interactive(model, tokens, temperature):
 
         chunk = user_input.strip()
         response = call_openai_api(chunk, model, temperature)
-        colored_print(f"AI: {response}")
+        colored_print(f"AI: {response}", "green")
 
 def process_directory(input_dir, output_dir, model, tokens, temperature, summary):
     if not os.path.exists(output_dir):
@@ -106,27 +127,19 @@ def process_directory(input_dir, output_dir, model, tokens, temperature, summary
            
             else:
                 process_chunks(input_file, output_file, model, tokens, temperature)
-            colored_print(f"Processed {input_file} -> {output_file}")
+            colored_print(f"Processed {input_file} -> {output_file}", "green")
 
-def count_tokens(text):
-    tokenizer = Tokenizer()
-    try:
-        tokens = list(tokenizer.tokenize(text))
-        return len(tokens)
-    except TokenizerException:
-        return 0
-
-def dry_run(input_file, tokens):
+def dry_run(input_file, max_tokens):
     text = load_text(input_file)
-    chunks = split_into_chunks(text, tokens)
-
-    total_tokens = 0
-    for chunk in chunks:
-        token_count = count_tokens(chunk)
-        total_tokens += token_count
-
+    chunks = split_into_chunks(text, max_tokens)
+    
+    colored_print(f"Input text will be split into {len(chunks)} chunks.", "green")
+    
+    total_tokens = sum(len(chunk) for chunk in chunks)
     api_calls = len(chunks)
-
+    
+    colored_print(f"Total tokens to be processed: {total_tokens}. This will make {api_calls} API calls.", "green")
+    
     return total_tokens, api_calls
 
 if __name__ == "__main__":
@@ -146,7 +159,7 @@ if __name__ == "__main__":
 
     if args.dry_run:
         total_tokens, api_calls = dry_run(args.input, args.tokens)
-        colored_print(f"Dry run: Estimated tokens: {total_tokens}, Estimated API calls: {api_calls}")
+        colored_print(f"Dry run: Estimated tokens: {total_tokens}, Estimated API calls: {api_calls}", "green")
     elif args.interactive:
         process_text_interactive(model, args.tokens, args.temperature)
     elif os.path.isfile(args.input):
@@ -157,5 +170,5 @@ if __name__ == "__main__":
     elif os.path.isdir(args.input):
         process_directory(args.input, args.output, model, args.tokens, args.temperature, args.summary)
     else:
-        colored_print("Error: Input path is not a valid file or directory")
+        colored_print("Error: Input path is not a valid file or directory", "red")
 

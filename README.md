@@ -50,7 +50,8 @@ The script is designed to **handle input text of any size**, automatically split
 
     - #### **For macOS/Linux:**
 
-        - Open a terminal and run the following command:
+        - Open a terminal and run the following command:from tiktoken import TokenCounts
+
 
             ```
             echo $PATH
