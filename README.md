@@ -33,6 +33,45 @@ The script is designed to **handle input text of any size**, automatically split
 - tiktoken package (optional, for accurate token counting)
 - An [OpenAI API key](https://platform.openai.com/account/api-keys)
 
+## Important
+
+1. Make sure Python is installed on your system. You can download and install the latest version from the official Python website: https://www.python.org/downloads/
+
+2. Check if Python is added to your system's PATH:
+
+    - #### **For Windows:**
+
+        - Open the Start menu, search for "Environment Variables," and click on "Edit the system environment variables."
+        - Click on "Environment Variables" in the System Properties window.
+        - In the "System variables" section, look for the "Path" variable, select it, and click "Edit."
+        - Make sure that the Python installation path (e.g., `C:\Python39\` or `C:\Users\YourUsername\AppData\Local\Programs\Python\Python39\`) and the Scripts path (e.g., `C:\Python39\Scripts\` or `C:\Users\YourUsername\AppData\Local\Programs\Python\Python39\Scripts\`) are both added to the Path variable.
+        - If they're not, add them manually by clicking "New" and entering the paths.
+        - Click "OK" to save the changes and close the windows.
+
+    - #### **For macOS/Linux:**
+
+        - Open a terminal and run the following command:
+
+            ```
+            echo $PATH
+            ```
+        - Check if the Python installation path is present in the output.
+        - If it's not, you can add the Python installation path to the PATH variable by adding the following line to your shell configuration file (e.g., `~/.bashrc`, `~/.bash_profile`, or `~/.zshrc`):
+
+            ```
+            export PATH="/path/to/your/python/installation:$PATH"
+            ```
+        - Replace `/path/to/your/python/installation` with the actual path to your Python installation.
+        - Save the file and restart your terminal or run source ~/.bashrc, source `~/.bash_profile`, or `source ~/.zshrc` to apply the changes.
+
+3. If Python is installed and added to your system's PATH but you still get the error, try using the python3 command instead of python:
+
+```
+python3 main.py
+```
+
+Open a terminal and run the following command:
+
 ## Installation
 
 1. Clone this repository or download the source code.
@@ -53,7 +92,7 @@ pip install tiktoken
 **The script can be run using the following command:**
 
 ```
-python main.py [options]
+python3 main.py [options]
 ```
 
 ### Command Options
@@ -72,31 +111,31 @@ python main.py [options]
 **Process a single input file and save the output to a specified file:**
 
 ```
-python main.py -i input.txt -o output.txt
+python3 main.py -i input.txt -o output.txt
 ```
 
 **Generate summaries of the input text:**
 
 ```
-python main.py -i input.txt -o summary.txt -s
+python3 main.py -i input.txt -o summary.txt -s
 ```
 
 **Use interactive mode:**
 
 ```
-python main.py -m
+python3 main.py -m
 ```
 
 **Perform a dry run to estimate tokens and API calls:**
 
 ```
-python main.py -i input.txt -n
+python3 main.py -i input.txt -n
 ```
 
 **Process a directory of input files:**
 
 ```
-python main.py -i input_directory -o output_directory
+python3 main.py -i input_directory -o output_directory
 ```
 
 ## Customization
