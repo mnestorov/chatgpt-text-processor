@@ -1,4 +1,4 @@
-# ChatGPT Text Processor
+# 🤖 ChatGPT Text Processor
 
 [![Licence](https://img.shields.io/github/license/Ileriayo/markdown-badges?style=for-the-badge)](./LICENSE)
 
@@ -16,8 +16,8 @@ The script is designed to **handle input text of any size**, automatically split
 
 ## Features
 
-- Text processing with OpenAI's GPT models without the need for the ChatGPT website
-- Handle input text of any size, automatically splitting it into manageable chunks
+- Text processing with **OpenAI's GPT models** without the need for the ChatGPT website
+- Handle **input text of any size**, automatically splitting it into manageable chunks
 - Summary generation
 - Interactive mode for direct input and output
 - Batch processing of multiple input files
@@ -31,7 +31,7 @@ The script is designed to **handle input text of any size**, automatically split
 - Python 3.6 or higher
 - openai package
 - tiktoken package (optional, for accurate token counting)
-- An OpenAI API key
+- An [OpenAI API key](https://platform.openai.com/account/api-keys)
 
 ## Installation
 
@@ -46,7 +46,7 @@ pip install openai
 pip install tiktoken
 ```
 
-3. Add your OpenAI API key and configure language models and colors in the config.ini file.
+3. Add your **OpenAI API key** and configure language models and colors in the `config.ini` file.
 
 ## Usage
 
@@ -101,7 +101,7 @@ python main.py -i input_directory -o output_directory
 
 ## Customization
 
-You can add more language models and change the colors for print messages by updating the config.ini file. Refer to the OpenAI documentation for a list of available models and their capabilities.
+You can add more language models and change the colors for print messages by updating the `config.ini` file. Refer to the **[OpenAI documentation](https://platform.openai.com/docs/models)** for a list of available models and their capabilities.
 
 ## TODOs
 
